@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor - ADS to Xentara Bridge</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.png" />
+    <script type="module" src="./assets/xentara-client.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navigation Bar Placeholder -->
+    <div id="nav-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6 flex-grow">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold mb-4">Monitor</h2>
+        <p class="mb-4">
+          Connection status:
+          <span id="connectionStatus" class="text-red-600"
+            >Waiting for connection...</span
+          >
+        </p>
+
+        <!-- Monitor Section -->
+        <div class="mb-6">
+          <h3 class="text-md font-medium mb-2">Data Points</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-gray-200">
+                  <th class="border px-4 py-2 w-36">Data Point</th>
+                  <th class="border px-4 py-2 w-36">Value</th>
+                  <th class="border px-4 py-2 w-24">Quality</th>
+                  <th class="border px-4 py-2 w-48">Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th class="border px-4 py-2">Pulse</th>
+                  <td class="border px-4 py-2">
+                    <span id="pulse.value" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="pulse.quality" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="pulse.error" class="text-red-600">n/a</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Sine Wave</th>
+                  <td class="border px-4 py-2">
+                    <span id="sineWave.value" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="sineWave.quality" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="sineWave.error" class="text-red-600">n/a</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Triangle</th>
+                  <td class="border px-4 py-2">
+                    <span id="triangle.value" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="triangle.quality" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="triangle.error" class="text-red-600">n/a</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Saw-Tooth</th>
+                  <td class="border px-4 py-2">
+                    <span id="sawTooth.value" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="sawTooth.quality" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="sawTooth.error" class="text-red-600">n/a</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Inverted Saw-Tooth</th>
+                  <td class="border px-4 py-2">
+                    <span id="invertedSawTooth.value" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="invertedSawTooth.quality" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="invertedSawTooth.error" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Noise</th>
+                  <td class="border px-4 py-2">
+                    <span id="noise.value" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="noise.quality" class="text-red-600">n/a</span>
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="noise.error" class="text-red-600">n/a</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="border px-4 py-2">Test Register</th>
+                  <td class="border px-4 py-2">
+                    <span id="testRegister.value" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="testRegister.quality" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                  <td class="border px-4 py-2">
+                    <span id="testRegister.error" class="text-red-600"
+                      >n/a</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Control Section -->
+        <div>
+          <h3 class="text-md font-medium mb-2">Control</h3>
+          <div class="flex items-center space-x-4 mb-4">
+            <label for="testRegisterInput" class="font-medium"
+              >Test Register:</label
+            >
+            <input
+              type="number"
+              id="testRegisterInput"
+              class="border rounded px-3 py-2 w-1/4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter value"
+            />
+            <button
+              id="setTestRegisterButton"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Set
+            </button>
+          </div>
+          <p>
+            Write result: <span id="writeResult" class="text-red-600"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // Load navigation bar
+      async function loadNav() {
+        try {
+          const response = await fetch("./components/nav.html");
+          if (!response.ok) throw new Error("Failed to load nav.html");
+          const navContent = await response.text();
+          document.getElementById("nav-placeholder").innerHTML = navContent;
+          highlightCurrentPage();
+        } catch (error) {
+          console.error("Error loading navigation:", error);
+          document.getElementById("writeResult").textContent =
+            `Navigation error: ${error.message}`;
+          document.getElementById("writeResult").className = "text-red-600";
+        }
+      }
+
+      //load websocket config
+      async function loadConfig() {
+        try {
+          const response = await fetch("./config/websocket-config.json");
+          if (!response.ok) throw new Error("Failed to load config.json");
+          return await response.json();
+        } catch (error) {
+          document.getElementById("status").value =
+            `Config error: ${error.message}`;
+          throw error;
+        }
+      }
+
+      // Highlight current page in navigation
+      function highlightCurrentPage() {
+        const currentPath =
+          window.location.pathname.split("/").pop() || "index.html";
+        const navLinks = document.querySelectorAll("nav a");
+        navLinks.forEach((link) => {
+          const href = link.getAttribute("href");
+          if (href === currentPath) {
+            link.classList.add("font-bold", "underline");
+          } else {
+            link.classList.remove("font-bold", "underline");
+          }
+        });
+      }
+
+      // Import Xentara module
+      import createXentaraModule from "./assets/xentara-client.js";
+
+      // Initialize Xentara connection
+      async function initConnection() {
+        const config = await loadConfig();
+        const { username, password, host, port } = config.websocket;
+        const Xentara = await createXentaraModule();
+        const connection = new Xentara.Connection();
+        connection.addEventListener("open", () => onOpen(connection));
+        connection.addEventListener("close", onClose);
+        const wsUrl = `wss://${username}:${password}@${host}:${port}/api/ws`;
+        connection.connect(wsUrl).catch((error) => {
+          onClose({ reason: `Connection failed: ${error.message}` });
+        });
+        return { Xentara, connection };
+      }
+
+      // Define data points
+      function defineDataPoints(Xentara, connection) {
+        const dataPoints = {
+          pulse: { primaryKey: "Sampler.Pulse" },
+          sineWave: { primaryKey: "Sampler.Sine Wave" },
+          triangle: { primaryKey: "Sampler.Triangle" },
+          sawTooth: { primaryKey: "Sampler.Saw-Tooth" },
+          invertedSawTooth: { primaryKey: "Sampler.Inverted Saw-Tooth" },
+          noise: { primaryKey: "Sampler.Noise" },
+          testRegister: { primaryKey: "Test Register" },
+        };
+        return dataPoints;
+      }
+
+      // Resolve data points
+      async function resolveDataPoints(connection, dataPoints) {
+        const resolvedDataPoints = await Promise.all([
+          connection.lookupElement(dataPoints.pulse.primaryKey),
+          connection.lookupElement(dataPoints.sineWave.primaryKey),
+          connection.lookupElement(dataPoints.triangle.primaryKey),
+          connection.lookupElement(dataPoints.sawTooth.primaryKey),
+          connection.lookupElement(dataPoints.invertedSawTooth.primaryKey),
+          connection.lookupElement(dataPoints.noise.primaryKey),
+          connection.lookupElement(dataPoints.testRegister.primaryKey),
+        ]);
+        return resolvedDataPoints;
+      }
+
+      // Create attributes
+      function createAttributes(Xentara, resolvedDataPoints) {
+        const attributes = {
+          pulse: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[0],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[0],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[0],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          sineWave: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[1],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[1],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[1],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          triangle: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[2],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[2],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[2],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          sawTooth: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[3],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[3],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[3],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          invertedSawTooth: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[4],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[4],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[4],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          noise: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[5],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[5],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[5],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+          testRegister: {
+            value: new Xentara.Attribute(
+              resolvedDataPoints[6],
+              Xentara.KnownAttribute.Value,
+            ),
+            quality: new Xentara.Attribute(
+              resolvedDataPoints[6],
+              Xentara.KnownAttribute.Quality,
+            ),
+            error: new Xentara.Attribute(
+              resolvedDataPoints[6],
+              Xentara.KnownAttribute.Error,
+            ),
+          },
+        };
+        return attributes;
+      }
+
+      // Setup observers
+      function setupObservers(connection, attributes) {
+        const observers = {};
+        for (const [name, attrs] of Object.entries(attributes)) {
+          observers[name] = {
+            value: new Xentara.AttributeObserver(connection, attrs.value),
+            quality: new Xentara.AttributeObserver(connection, attrs.quality),
+            error: new Xentara.AttributeObserver(connection, attrs.error),
+          };
+          wireObserver(observers[name].value, `${name}.value`);
+          wireObserver(observers[name].quality, `${name}.quality`);
+          wireObserver(observers[name].error, `${name}.error`);
+        }
+        return observers;
+      }
+
+      // Create subscription
+      function createSubscription(attributes) {
+        const subscriptionAttributes = [];
+        for (const attrs of Object.values(attributes)) {
+          subscriptionAttributes.push(attrs.value, attrs.quality, attrs.error);
+        }
+        const subscription = new Xentara.Subscription(subscriptionAttributes);
+        return subscription;
+      }
+
+      // Wire an observer
+      function wireObserver(observer, elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          console.error(`Element with ID ${elementId} not found`);
+          return;
+        }
+        observer.addEventListener("valuechange", (event) => {
+          element.textContent = event.value;
+          element.className = "text-gray-800";
+        });
+        observer.addEventListener("error", (event) => {
+          element.textContent = "n/a";
+          element.className = "text-red-600";
+          console.error(`Error for ${elementId}: ${event.reason}`);
+        });
+      }
+
+      // Open handler
+      async function onOpen(connection) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = "Connected";
+        connectionStatusElement.className = "text-green-600";
+
+        const dataPoints = defineDataPoints(Xentara, connection);
+        try {
+          const resolvedDataPoints = await resolveDataPoints(
+            connection,
+            dataPoints,
+          );
+          const attributes = createAttributes(Xentara, resolvedDataPoints);
+          window.attributes = attributes; // Store for write operation
+          const observers = setupObservers(connection, attributes);
+          window.observers = observers; // Store for unhooking
+          const subscription = createSubscription(attributes);
+          connection.subscribe(subscription);
+        } catch (error) {
+          console.error("Error resolving data points:", error);
+          document.getElementById("writeResult").textContent =
+            `Error: ${error.message}`;
+          document.getElementById("writeResult").className = "text-red-600";
+        }
+      }
+
+      // Close handler
+      function onClose(event) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = event.reason || "Disconnected";
+        connectionStatusElement.className = "text-red-600";
+        console.error(
+          "WebSocket closed:",
+          event.reason,
+          "Clean:",
+          event.wasClean,
+        );
+
+        // Unhook observers
+        const observers = window.observers || {};
+        for (const obs of Object.values(observers)) {
+          obs.value?.unhook();
+          obs.quality?.unhook();
+          obs.error?.unhook();
+        }
+      }
+
+      // Handler for set Test Register button
+      function onSetTestRegisterButtonClick() {
+        const testRegisterValue = Number(
+          document.getElementById("testRegisterInput").value,
+        );
+        if (isNaN(testRegisterValue)) {
+          console.warn("Invalid Test Register value");
+          onWriteError({ reason: "Invalid value" });
+          return;
+        }
+        if (!window.attributes?.testRegister?.value) {
+          console.warn(
+            "Set Test Register button clicked but testRegister.value is null",
+          );
+          onWriteError({ reason: "Test Register not initialized" });
+          return;
+        }
+        connection
+          .write(window.attributes.testRegister.value, testRegisterValue)
+          .then(() => onWriteSuccess("Set Test Register"))
+          .catch(onWriteError);
+      }
+
+      // Handler for successful write
+      function onWriteSuccess(action) {
+        const element = document.getElementById("writeResult");
+        element.textContent = `Success: ${action}`;
+        element.className = "text-green-600";
+      }
+
+      // Handler for write errors
+      function onWriteError(event) {
+        const element = document.getElementById("writeResult");
+        element.textContent = `Error: ${event.reason}`;
+        element.className = "text-red-600";
+        console.error(`Write error: ${event.reason}`);
+      }
+
+      // Initialize application
+      async function init() {
+        await loadNav();
+        const { Xentara, connection } = await initConnection();
+        window.Xentara = Xentara;
+        window.connection = connection;
+        document
+          .getElementById("setTestRegisterButton")
+          .addEventListener("click", onSetTestRegisterButtonClick);
+      }
+
+      // Wait for DOM to load
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

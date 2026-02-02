@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xentara Websocket</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.png" />
+    <script type="module" src="./assets/xentara-client.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navigation Bar Placeholder -->
+    <div id="nav-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6 flex-grow">
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Connection</h2>
+        <p>
+          Status:
+          <span id="connectionStatus" class="text-red-600"
+            >Waiting for connection...</span
+          >
+        </p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Monitor</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="border px-4 py-2 w-36">Data Point</th>
+                <th class="border px-4 py-2 w-36">Value</th>
+                <th class="border px-4 py-2 w-24">Quality</th>
+                <th class="border px-4 py-2 w-48">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="border px-4 py-2">Pulse</th>
+                <td class="border px-4 py-2">
+                  <span id="pulse.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="pulse.quality" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="pulse.timestamp" class="text-red-600">n/a</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Sine Wave</th>
+                <td class="border px-4 py-2">
+                  <span id="sineWave.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="sineWave.quality" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="sineWave.timestamp" class="text-red-600">n/a</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Triangle</th>
+                <td class="border px-4 py-2">
+                  <span id="triangle.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="triangle.quality" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="triangle.timestamp" class="text-red-600">n/a</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Saw-Tooth</th>
+                <td class="border px-4 py-2">
+                  <span id="sawTooth.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="sawTooth.quality" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="sawTooth.timestamp" class="text-red-600">n/a</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Inverted Saw-Tooth</th>
+                <td class="border px-4 py-2">
+                  <span id="invertedSawTooth.value" class="text-red-600"
+                    >n/a</span
+                  >
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="invertedSawTooth.quality" class="text-red-600"
+                    >n/a</span
+                  >
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="invertedSawTooth.timestamp" class="text-red-600"
+                    >n/a</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Noise</th>
+                <td class="border px-4 py-2">
+                  <span id="noise.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="noise.quality" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="noise.timestamp" class="text-red-600">n/a</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="border px-4 py-2">Test Register</th>
+                <td class="border px-4 py-2">
+                  <span id="testRegister.value" class="text-red-600">n/a</span>
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="testRegister.quality" class="text-red-600"
+                    >n/a</span
+                  >
+                </td>
+                <td class="border px-4 py-2">
+                  <span id="testRegister.timestamp" class="text-red-600"
+                    >n/a</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold mb-4">Control</h2>
+        <div class="flex items-center space-x-4 mb-4">
+          <label for="testRegisterInput" class="font-medium"
+            >Test Register:</label
+          >
+          <input
+            type="number"
+            id="testRegisterInput"
+            class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter value"
+          />
+          <button
+            id="setTestRegisterButton"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Set
+          </button>
+        </div>
+        <p>
+          Write result: <span id="writeResult" class="text-gray-600"></span>
+        </p>
+      </div>
+    </div>
+
+    <script type="module">
+      // Load navigation bar
+      async function loadNav() {
+        try {
+          const response = await fetch("./components/nav.html");
+          if (!response.ok) throw new Error("Failed to load nav.html");
+          const navContent = await response.text();
+          document.getElementById("nav-placeholder").innerHTML = navContent;
+        } catch (error) {
+          console.error("Error loading navigation:", error);
+        }
+      }
+
+      //load websocket config
+      async function loadConfig() {
+        try {
+          const response = await fetch("./config/websocket-config.json");
+          if (!response.ok) throw new Error("Failed to load config.json");
+          return await response.json();
+        } catch (error) {
+          document.getElementById("status").value =
+            `Config error: ${error.message}`;
+          throw error;
+        }
+      }
+
+      // Import Xentara module
+      import createXentaraModule from "./assets/xentara-client.js";
+
+      // Initialize Xentara connection
+      async function initConnection() {
+        const config = await loadConfig();
+        const { username, password, host, port } = config.websocket;
+        const Xentara = await createXentaraModule();
+        const connection = new Xentara.Connection();
+        connection.addEventListener("open", () => onOpen(connection));
+        connection.addEventListener("close", onClose);
+        const wsUrl = `wss://${username}:${password}@${host}:${port}/api/ws`;
+        connection.connect(wsUrl).catch((error) => {
+          onClose({ reason: `Connection failed: ${error.message}` });
+        });
+        return { Xentara, connection };
+      }
+
+      // Define data points
+      function defineDataPoints(Xentara) {
+        const dataPoints = {
+          pulse: new Xentara.Element("db74bcdf-e5fc-4995-8712-f0817316ef80"),
+          sineWave: new Xentara.Element("f0ccedac-b2ad-408e-b5e5-9928286398aa"),
+          triangle: new Xentara.Element("2bc1193e-f3aa-4d27-825a-e2df80368b66"),
+          sawTooth: new Xentara.Element("b135131e-295a-4337-a1a3-cff5398cc882"),
+          invertedSawTooth: new Xentara.Element(
+            "61e4a832-e567-449a-b698-6b8be438217f",
+          ),
+          noise: new Xentara.Element("8277834b-2b96-43c7-bfac-dc1b2b765e47"),
+          testRegister: new Xentara.Element(
+            "1f76606f-ebf4-4678-b345-86c15873a0d6",
+          ),
+        };
+
+        const attributes = {};
+        for (const [name, element] of Object.entries(dataPoints)) {
+          attributes[name] = {
+            value: new Xentara.Attribute(element, Xentara.KnownAttribute.Value),
+            quality: new Xentara.Attribute(
+              element,
+              Xentara.KnownAttribute.Quality,
+            ),
+            timestamp: new Xentara.Attribute(
+              element,
+              Xentara.KnownAttribute.ChangeTime,
+            ),
+          };
+        }
+        return { dataPoints, attributes };
+      }
+
+      // Setup observers
+      function setupObservers(connection, attributes) {
+        const observers = {};
+        for (const [name, attrs] of Object.entries(attributes)) {
+          observers[name] = {
+            value: new Xentara.AttributeObserver(connection, attrs.value),
+            quality: new Xentara.AttributeObserver(connection, attrs.quality),
+            timestamp: new Xentara.AttributeObserver(
+              connection,
+              attrs.timestamp,
+            ),
+          };
+          wireObserver(observers[name].value, `${name}.value`);
+          wireObserver(observers[name].quality, `${name}.quality`);
+          wireObserver(observers[name].timestamp, `${name}.timestamp`);
+        }
+        return observers;
+      }
+
+      // Create subscription
+      function createSubscription(attributes) {
+        const subscriptionAttributes = [];
+        for (const attrs of Object.values(attributes)) {
+          subscriptionAttributes.push(
+            attrs.value,
+            attrs.quality,
+            attrs.timestamp,
+          );
+        }
+        return new Xentara.Subscription(subscriptionAttributes);
+      }
+
+      // Wire an observer
+      function wireObserver(observer, elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) {
+          console.error(`Element with ID ${elementId} not found`);
+          return;
+        }
+        observer.addEventListener("valuechange", (event) => {
+          element.textContent = event.value;
+          element.className = "text-gray-800";
+        });
+        observer.addEventListener("error", (event) => {
+          element.textContent = "n/a";
+          element.className = "text-red-600";
+        });
+      }
+
+      // Open handler
+      function onOpen(connection) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = "Connected";
+        connectionStatusElement.className = "text-green-600";
+
+        const { attributes } = defineDataPoints(Xentara);
+        const subscription = createSubscription(attributes);
+        connection.subscribe(subscription);
+      }
+
+      // Close handler
+      function onClose(event) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = event.reason || "Disconnected";
+        connectionStatusElement.className = "text-red-600";
+      }
+
+      // Handler for the set Test Register button
+      function onSetTestRegisterButtonClick() {
+        const { attributes } = defineDataPoints(Xentara);
+        const testRegisterValue = Number(
+          document.getElementById("testRegisterInput").value,
+        );
+        connection
+          .write(attributes.testRegister.value, testRegisterValue)
+          .then(onWriteSuccess)
+          .catch(onWriteError);
+      }
+
+      // Handler for successful write
+      function onWriteSuccess() {
+        const element = document.getElementById("writeResult");
+        element.textContent = "Success";
+        element.className = "text-green-600";
+      }
+
+      // Handler for write errors
+      function onWriteError(event) {
+        const element = document.getElementById("writeResult");
+        element.textContent = event.message;
+        element.className = "text-red-600";
+      }
+
+      // Initialize application
+      async function init() {
+        await loadNav();
+        const { Xentara, connection } = await initConnection();
+        window.Xentara = Xentara;
+        window.connection = connection;
+        const { attributes } = defineDataPoints(Xentara);
+        setupObservers(connection, attributes);
+        document
+          .getElementById("setTestRegisterButton")
+          .addEventListener("click", onSetTestRegisterButtonClick);
+      }
+
+      // Wait for DOM to load
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

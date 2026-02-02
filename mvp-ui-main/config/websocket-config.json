@@ -1,0 +1,8 @@
+{
+  "websocket": {
+    "username": "xentara",
+    "password": "sowieso-exemplar-strikes",
+    "host": "localhost",
+    "port": 8080
+  }
+}

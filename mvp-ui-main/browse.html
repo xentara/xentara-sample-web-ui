@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browse - Xentara Websocket</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.png" />
+    <script type="module" src="./assets/xentara-client.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navigation Bar Placeholder -->
+    <div id="nav-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6 flex-grow">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold mb-4">Browse</h2>
+        <p class="mb-4">
+          Connection status:
+          <span id="connectionStatus" class="text-red-600"
+            >Waiting for connection...</span
+          >
+        </p>
+        <div class="flex items-center space-x-4 mb-4">
+          <label for="primaryKeyField" class="font-medium">Primary Key:</label>
+          <input
+            type="text"
+            id="primaryKeyField"
+            class="border rounded px-3 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter a primary key"
+          />
+          <button
+            id="browseButton"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Browse
+          </button>
+        </div>
+        <div>
+          <label for="status" class="font-medium">Output:</label>
+          <textarea
+            id="status"
+            rows="10"
+            class="w-full border rounded px-3 py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            readonly
+          ></textarea>
+        </div>
+      </div>
+    </div>
+    <script type="module">
+      // Load navigation bar
+      async function loadNav() {
+        try {
+          const response = await fetch("../components/nav.html");
+          if (!response.ok) throw new Error("Failed to load nav.html");
+          document.getElementById("nav-placeholder").innerHTML =
+            await response.text();
+        } catch (error) {
+          document.getElementById("status").value =
+            `Navigation error: ${error.message}`;
+        }
+      }
+      async function loadConfig() {
+        try {
+          const response = await fetch("./config/websocket-config.json");
+          if (!response.ok) throw new Error("Failed to load config.json");
+          return await response.json();
+        } catch (error) {
+          document.getElementById("status").value =
+            `Config error: ${error.message}`;
+          throw error;
+        }
+      }
+      import createXentaraModule from "./assets/xentara-client.js";
+
+      // Initialize Xentara connection
+      async function initConnection() {
+        const config = await loadConfig();
+        const { username, password, host, port } = config.websocket;
+        const Xentara = await createXentaraModule();
+        const connection = new Xentara.Connection();
+        connection.addEventListener("open", () => onOpen(connection));
+        connection.addEventListener("close", onClose);
+        const wsUrl = `wss://${username}:${password}@${host}:${port}/api/ws`;
+        connection.connect(wsUrl).catch((error) => {
+          onClose({ reason: `Connection failed: ${error.message}` });
+        });
+        return { Xentara, connection };
+      }
+
+      // Open handler
+      function onOpen(connection) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = "Connected";
+        connectionStatusElement.className = "text-green-600";
+      }
+
+      // Close handler
+      function onClose(event) {
+        const connectionStatusElement =
+          document.getElementById("connectionStatus");
+        connectionStatusElement.textContent = event.reason || "Disconnected";
+        connectionStatusElement.className = "text-red-600";
+      }
+
+      // Browse handler
+      async function onBrowseClick(connection) {
+        const primaryKey = document.getElementById("primaryKeyField").value;
+        if (!primaryKey) {
+          document.getElementById("status").value =
+            "Error: Please enter a primary key";
+          return;
+        }
+        try {
+          const element = await connection.lookupElement(primaryKey);
+          const entries = await connection.browse(element, {
+            depth: 2,
+            elementCategory: [
+              Xentara.ElementCategory.ElementGroup,
+              Xentara.ElementCategory.DataPoint,
+            ],
+          });
+          let resultString = "";
+          for (let i = 0; i < entries.size(); ++i) {
+            resultString += entries.get(i).toString() + "\n";
+          }
+          document.getElementById("status").value =
+            resultString || "No entries found";
+        } catch (error) {
+          document.getElementById("status").value =
+            `Browse error: ${error.message}`;
+        }
+      }
+
+      // Initialize application
+      async function init() {
+        await loadNav();
+        const { Xentara, connection } = await initConnection();
+        window.Xentara = Xentara;
+        window.connection = connection;
+        document
+          .getElementById("browseButton")
+          .addEventListener("click", () => onBrowseClick(connection));
+      }
+
+      // Wait for DOM to load
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

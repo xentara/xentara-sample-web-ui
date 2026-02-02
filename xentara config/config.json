@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.xentara.io/xentara/schema-xentara-config.json",
+  "httpServer": {
+    "port": 8080,
+    "authentication": {
+      "schemes": [ "Basic" ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.xentara.io/xentara/schema-xentara-users.json",
+  "users": [
+    {
+      "userName": "xentara",
+      "UUID": "012a00fb-26f3-4d63-840b-85cf5ea0eb44",
+      "roles": [ "Administrator" ]
+    }
+  ]
+}

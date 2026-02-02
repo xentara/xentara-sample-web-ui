@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.xentara.io/xentara/schema-xentara-security.json",
+ "roles": [
+  {
+    "name": "Administrator",
+    "UUID": "8a38fb06-fa47-4f98-9419-a0fb6511e671"
+  }
+],
+"ACL": {
+  "inherit": false,
+  "entries": [
+    {
+      "role": "Everyone",
+      "allow": [ "websocket.connect"]
+    },
+    {
+      "role": "Administrator",
+      "allow": [ "write", "read" ]
+    }
+  ]
+}
+}
