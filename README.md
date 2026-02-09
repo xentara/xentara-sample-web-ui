@@ -1,15 +1,15 @@
 # Sample Web UI for Xentara
-This project contains a sample Web UI for Xentara. It required Xentara, as well as a Xentara licence. You can get a Xentara trail licence under [Xentara Trail](https://try.xentara.io/).
+This project contains a sample Web UI for Xentara. It requires Xentara, as well as a Xentara licence. You can get a Xentara trial licence under [Xentara Trail](https://try.xentara.io/).
 
 The documentation for Xentara can be found at https://docs.xentara.io/xentara
 
-This Web UI used the Xentara Websocket connection. Docs can be found here:
+This Web UI uses the Xentara Websocket connection. Docs can be found here:
 
 - https://docs.xentara.io/xentara-websocket-api/
 
 
 ## Functionality
-This Web UI reads values fron Xentara and displayed it.
+This Web UI reads values fron Xentara and displays it.
 
 ## Prerequisites
 You need these tools to run the project:
@@ -25,8 +25,8 @@ Follow these steps to set up the project:
 2. **Create TLS Certificate**:
    - Open a terminal or command prompt
    - run the command `openssl req -nodes -x509 -newkey rsa:4096 -keyout xentara.key.pem -out xentara.pem -sha256 -days 36500` 
-   - Copy the xentara.pem in to the certs folder of the config
-   - Copy the xentara.key.pem in to the private folder of the config
+   - Copy the xentara.pem to the certs folder of the config
+   - Copy the xentara.key.pem to the private folder of the config
 
 3. **Configure WebSocket Settings**:
    - Open or create websocket-config.json in the mvp-ui-main folder.
@@ -47,9 +47,9 @@ Follow these steps to start the web ui:
    - Example command: `cd path\to\mvp-ui-main`.
    
 2. **Start the Server**:
+   - If Python is not installed, download and install it from python.org.
    - In the terminal, run: `python -m http.server 8008`.
    - This starts a web server on port 8008.
-   - If Python is not installed, download and install it from python.org.
 
 3. **Handle WebSocket Certificate**:
    - Open a browser and go to https://localhost:8080 (or https://<server-ip>:8080 for remote servers, e.g., https://192.168.2.45:8080).
